@@ -53,19 +53,22 @@ if (UNIX AND NOT APPLE)
 endif (UNIX AND NOT APPLE)
 if (WIN32)
     add_executable(TerminalChatWindows main.cpp
-            network/Networking.cpp
-            network/Networking.h
-            network/listeners/test/LoginListener.cpp
-            network/listeners/LoginListener.h
+            #network/Networking.cpp
+            #network/Networking.h
+            #network/listeners/test/LoginListener.cpp
+            #network/listeners/LoginListener.h
             dependencies/dependencies.cpp
             dependencies/dependencies.h
-            network/listeners/test/RegisterListener.cpp
-            network/listeners/RegisterListener.h
-            network/listeners/test/JoinListener.cpp
-            network/listeners/JoinListener.h
-            network/listeners/test/SendMessageListener.cpp
-            network/listeners/SendMessageListener.h
-            network/listeners/test/GetMessagesListener.cpp
-            network/listeners/GetMessagesListener.h
-            dependencies/windows/windows_dependencies.cpp dependencies/windows/windows_dependencies.h)
-endif ()
+            #network/listeners/test/RegisterListener.cpp
+            #network/listeners/RegisterListener.h
+            #network/listeners/test/JoinListener.cpp
+            #network/listeners/JoinListener.h
+            #network/listeners/test/SendMessageListener.cpp
+            #network/listeners/SendMessageListener.h
+            #network/listeners/test/GetMessagesListener.cpp
+            #network/listeners/GetMessagesListener.h
+            dependencies/windows/windows_dependencies.cpp
+            dependencies/windows/windows_dependencies.h)
+
+    set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
+endif (WIN32)
