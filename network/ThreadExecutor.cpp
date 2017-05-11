@@ -6,7 +6,7 @@
 #include <chrono>
 #include <thread>
 
-ThreadExecutor::ThreadExecutor(uint count) {
+ThreadExecutor::ThreadExecutor(unsigned int count) {
     executors.resize(count);
     for (int i = 0; i < count; i++) {
         executors[i] = std::thread(

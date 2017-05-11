@@ -15,7 +15,7 @@
 class ThreadExecutor {
 public:
 
-    ThreadExecutor(uint count);
+    ThreadExecutor(unsigned int count);
 
     ~ThreadExecutor();
 
