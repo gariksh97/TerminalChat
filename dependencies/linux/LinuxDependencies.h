@@ -7,7 +7,12 @@
 
 #include <string>
 
-int notify(std::string name, std::string field);
 
 std::string inputPassword();
+
+void openTUI();
+
+void saveToken(std::string s);
+
+std::string loadToken();
 #endif //TERMINALCHAT_LINUX_DEPENDENCIES_H

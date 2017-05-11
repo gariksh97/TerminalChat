@@ -1,16 +1,7 @@
 cmake_minimum_required(VERSION 2.7)
 project(TerminalChat)
 
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREAD ON)
 set(CMAKE_CXX_STANDARD 11)
-
-#Boost
-find_package(Boost 1.40.0 REQUIRED system)
-if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    link_directories(${Boost_LIBRARY_DIRS})
-endif (Boost_FOUND)
 
 if (UNIX AND NOT APPLE)
     #GTK2
@@ -25,50 +16,100 @@ if (UNIX AND NOT APPLE)
     link_directories(${GTK3_LIBRARY_DIRS})
 
     add_executable(TerminalChatLinux main.cpp
+
             network/Networking.cpp
             network/Networking.h
-            network/listeners/test/LoginListener.cpp
-            network/listeners/LoginListener.h
-            dependencies/dependencies.cpp
-            dependencies/dependencies.h
-            dependencies/linux/linux_dependencies.cpp
-            dependencies/linux/linux_dependencies.h
-            network/listeners/test/RegisterListener.cpp
-            network/listeners/RegisterListener.h
-            network/listeners/test/JoinListener.cpp
-            network/listeners/JoinListener.h
-            network/listeners/test/SendMessageListener.cpp
-            network/listeners/SendMessageListener.h
-            network/listeners/test/GetMessagesListener.cpp
-            network/listeners/GetMessagesListener.h
+            network/Listener.h
+            network/Listener.cpp
+            network/ThreadExecutor.cpp
+            network/ThreadExecutor.h
+
+            dependencies/Dependencies.cpp
+            dependencies/Dependencies.h
+
+            dependencies/linux/LinuxDependencies.cpp
+            dependencies/linux/LinuxDependencies.h
+
+            dependencies/linux/tui/ChatTUI.cpp
+            dependencies/linux/tui/ChatTUI.h
+            dependencies/linux/tui/ChatList.cpp
+            dependencies/linux/tui/ChatList.h
+            dependencies/linux/tui/Chat.cpp
+            dependencies/linux/tui/Chat.h
+            dependencies/linux/tui/TUIHelper.cpp
+            dependencies/linux/tui/TUIHelper.h
+            dependencies/linux/tui/TextBox.cpp
+            dependencies/linux/tui/TextBox.h
+
+            models/ChatModel.cpp
+            models/ChatModel.h
+            models/MessageModel.cpp
+            models/MessageModel.h
+
+            json/json.hpp
             )
 
     target_link_libraries(TerminalChatLinux
-            ${LIBNOTIFY_INCLUDEDIR}
-            ${LIBNOTIFY_INCLUDE_DIRS}
-            ${GTK3_LIBRARIES}
-            ${GTK2_LIBRARIES}
-            ${Boost_LIBRARIES}
-            -lssl -lrt -lcrypto -lpthread -lnotify -lncurses)
+            -lssl -lrt -lcrypto -lpthread -lncurses
+            )
 endif (UNIX AND NOT APPLE)
 if (WIN32)
     add_executable(TerminalChatWindows main.cpp
             #network/Networking.cpp
             #network/Networking.h
-            #network/listeners/test/LoginListener.cpp
+            #network/listeners/implementation/LoginListener.cpp
             #network/listeners/LoginListener.h
-            dependencies/dependencies.cpp
-            dependencies/dependencies.h
-            #network/listeners/test/RegisterListener.cpp
+            dependencies/Dependencies.cpp
+            dependencies/Dependencies.h
+            #network/listeners/implementation/RegisterListener.cpp
             #network/listeners/RegisterListener.h
-            #network/listeners/test/JoinListener.cpp
+            #network/listeners/implementation/JoinListener.cpp
             #network/listeners/JoinListener.h
-            #network/listeners/test/SendMessageListener.cpp
+            #network/listeners/implementation/SendMessageListener.cpp
             #network/listeners/SendMessageListener.h
-            #network/listeners/test/GetMessagesListener.cpp
+            #network/listeners/implementation/GetMessagesListener.cpp
             #network/listeners/GetMessagesListener.h
-            dependencies/windows/windows_dependencies.cpp
-            dependencies/windows/windows_dependencies.h)
+            dependencies/windows/WindowsDependencies.cpp
+            dependencies/windows/WindowsDependencies.h models/ChatModel.cpp models/ChatModel.h models/MessageModel.cpp models/MessageModel.h)
 
     set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif (WIN32)
+if (APPLE)
+    add_executable(TerminalChatLinux main.cpp
+
+            network/Networking.cpp
+            network/Networking.h
+            network/Listener.h
+            network/Listener.cpp
+            network/ThreadExecutor.cpp
+            network/ThreadExecutor.h
+
+            dependencies/Dependencies.cpp
+            dependencies/Dependencies.h
+
+            dependencies/linux/LinuxDependencies.cpp
+            dependencies/linux/LinuxDependencies.h
+
+            dependencies/linux/tui/ChatTUI.cpp
+            dependencies/linux/tui/ChatTUI.h
+            dependencies/linux/tui/ChatList.cpp
+            dependencies/linux/tui/ChatList.h
+            dependencies/linux/tui/Chat.cpp
+            dependencies/linux/tui/Chat.h
+            dependencies/linux/tui/TUIHelper.cpp
+            dependencies/linux/tui/TUIHelper.h
+            dependencies/linux/tui/TextBox.cpp
+            dependencies/linux/tui/TextBox.h
+
+            models/ChatModel.cpp
+            models/ChatModel.h
+            models/MessageModel.cpp
+            models/MessageModel.h
+
+            json/json.hpp
+            )
+
+    target_link_libraries(TerminalChatLinux
+            -lssl -lrt -lcrypto -lpthread -lncurses
+            )
+endif (APPLE)

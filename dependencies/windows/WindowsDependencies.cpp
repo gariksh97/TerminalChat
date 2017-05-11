@@ -2,14 +2,14 @@
 // Created by garik on 03.05.17.
 //
 
-#include "windows_dependencies.h"
+#include "WindowsDependencies.h"
 #include <windows.h>
 #include <iostream>
 #include <thread>
 
 
 void notify(std::string name, std::string text) {
-    //NEED TO CREATE NEW THREAD
+    //TODO: NEED TO CREATE NEW THREAD
     std::string value = "bin\\windows\\notify-send.exe \"" + name + "\" \"" + text + "\"";
     system(value.c_str());
 };

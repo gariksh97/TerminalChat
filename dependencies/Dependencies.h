@@ -9,9 +9,12 @@
 
 
 
-struct dependencies {
-    static void notify(std::string name, std::string text);
+struct Dependencies {
     static std::string inputPassword();
+    static void openTUI();
+
+    static void saveToken(std::string);
+    static std::string loadToken();
 };
 
 #endif //TERMINALCHAT_DEPENDENCIES_H
