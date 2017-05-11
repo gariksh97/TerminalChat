@@ -1,0 +1,3 @@
+/home/garik/CLionProjects/TerminalChat/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/garik/CLionProjects/TerminalChat/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/garik/CLionProjects/TerminalChat/cmake-build-debug/CMakeFiles/TerminalChatLinux.dir
