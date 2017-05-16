@@ -3,7 +3,7 @@
 //
 
 #include "ChatList.h"
-#include <ncurses.h>
+#include "../dependencies/DependenciesTUI.h"
 
 ChatList::ChatList() {
     pos = 0;
@@ -33,7 +33,7 @@ void ChatList::show(int fx, int fy, int tx, int ty) {
         if (tx - fx < name.length()) {
             name = name.substr(0, tx - fx);
         }
-        mvprintw(fy, fx, name.c_str());
+        DependenciesTUI::tui_mvprintw(fy, fx, name);
         fy += ITEM_SIZE;
     }
 }

@@ -2,8 +2,8 @@
 // Created by garik on 07.05.17.
 //
 
-#include <ncurses.h>
 #include "TextBox.h"
+#include "../dependencies/DependenciesTUI.h"
 
 TextBox::TextBox() {
     this->text = "";
@@ -24,13 +24,13 @@ void TextBox::show(int fx, int fy, int tx, int ty) {
     }
     {
         std::string m = "Your message:";
-        mvprintw(fy++, fx, m.length() <= tx - fx ? m.c_str() : m.substr(0, tx - fx).c_str());
+        DependenciesTUI::tui_mvprintw(fy++, fx, m.length() <= tx - fx ? m.c_str() : m.substr(0, tx - fx));
     }
     for (int i = (tx - fx) * offset; i < text.length() && fy <= ty; fy++) {
         if (tx - fx <= text.length())
-            mvprintw(fy, fx, text.substr(i, tx - fx).c_str());
+            DependenciesTUI::tui_mvprintw(fy, fx, text.substr(i, tx - fx));
         else
-            mvprintw(fy, fx, text.substr(i).c_str());
+            DependenciesTUI::tui_mvprintw(fy, fx, text.substr(i));
         i += tx - fx;
     }
 }
@@ -98,7 +98,7 @@ void TextBox::moveTo(int direction) {
     }
 }
 
-uint TextBox::getPos() {
+unsigned int TextBox::getPos() {
     return pos;
 }
 

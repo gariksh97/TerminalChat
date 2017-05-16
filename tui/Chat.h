@@ -6,7 +6,7 @@
 #define TERMINALCHAT_CHAT_H
 
 
-#include "../../../models/ChatModel.h"
+#include "../models/ChatModel.h"
 
 class Chat {
 public:

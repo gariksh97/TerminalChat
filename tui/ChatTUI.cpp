@@ -4,7 +4,7 @@
 
 #include "ChatTUI.h"
 #include "TUIHelper.h"
-#include <ncurses.h>
+#include "../dependencies/DependenciesTUI.h"
 
 int max(int a, int b) {
     return a > b ? a : b;
@@ -41,19 +41,19 @@ void ChatTUI::start() {
     this->chatList.setChats(chats);
     this->chat.setChat(chats[1]);
 
-    initscr();
-    keypad(stdscr, TRUE);
-    raw();
-    noecho();
-    nonl();
+     DependenciesTUI::tui_initscr();
+    DependenciesTUI::tui_keypad();
+    DependenciesTUI::tui_raw();
+    DependenciesTUI::tui_noecho();
+    DependenciesTUI::tui_nonl();
     bool shouldQuit = false;
     while (!shouldQuit) {
-        int maxX = getmaxx(stdscr);
-        int maxY = getmaxy(stdscr);
+        int maxX = DependenciesTUI::tui_getmaxx();
+        int maxY = DependenciesTUI::tui_getmaxy();
         int chatListX = min(20, maxX / 2);
         int chatListY = maxY - 2;
         int chatY = maxY - max(10, maxY / 3);
-        clear();
+        DependenciesTUI::tui_clear();
         this->chatList.show(0, 0, chatListX, chatListY);
         this->chatList.setSelected();
         this->chat.show(
@@ -82,37 +82,37 @@ void ChatTUI::start() {
 
         switch (state) {
             case CHATS:
-                mvprintw(maxY - 1, 0,
-                         "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT | ENTER: SELECT CHAT"
+                DependenciesTUI::tui_mvprintw(maxY - 1, 0,
+                                              "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT | ENTER: SELECT CHAT"
                 );
                 break;
             case TEXT_BOX:
-                mvprintw(maxY - 1, 0,
-                         "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT | ENTER: SEND MESSAGE"
+                DependenciesTUI::tui_mvprintw(maxY - 1, 0,
+                                              "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT | ENTER: SEND MESSAGE"
                 );
                 break;
             case MESSAGES:
-                mvprintw(maxY - 1, 0,
-                         "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT"
+                DependenciesTUI::tui_mvprintw(maxY - 1, 0,
+                                              "F1: CHATS | F2: TEXT BOX | F3 : MESSAGES | F4 : QUIT"
                 );
                 break;
             default:
                 break;
         }
-        move(y, x);
-        refresh();
-        int c = getch();
+        DependenciesTUI::tui_move(y, x);
+        DependenciesTUI::tui_refresh();
+        int c = DependenciesTUI::tui_getch();
         switch (c) {
-            case KEY_F(4):
+            case DependenciesTUI::TUI_F4:
                 shouldQuit = true;
                 break;
-            case KEY_F(3):
+            case DependenciesTUI::TUI_F3:
                 state = MESSAGES;
                 break;
-            case KEY_F(2):
+            case DependenciesTUI::TUI_F2:
                 state = TEXT_BOX;
                 break;
-            case KEY_F(1):
+            case DependenciesTUI::TUI_F1:
                 state = CHATS;;
                 break;
             default:
@@ -151,21 +151,21 @@ void ChatTUI::start() {
 }
 
 void ChatTUI::exit() {
-    clear();
-    refresh();
-    endwin();
+    DependenciesTUI::tui_clear();
+    DependenciesTUI::tui_refresh();
+    DependenciesTUI::tui_endwin();
 }
 
 void ChatTUI::onChatsList(int c) {
-    if (c == KEY_UP) {
+    if (c == DependenciesTUI::TUI_UP) {
         chatList.moveTo(ChatList::UP);
         return;
     }
-    if (c == KEY_DOWN) {
+    if (c == DependenciesTUI::TUI_DOWN) {
         chatList.moveTo(ChatList::DOWN);
         return;
     }
-    if (c == KEY_ENTER || c == '\n' || c == '\r') {
+    if (c == DependenciesTUI::TUI_ENTER || c == '\n' || c == '\r') {
         chatList.setSelected();
         chat.setChat(chatList.getChat());
         return;
@@ -173,11 +173,11 @@ void ChatTUI::onChatsList(int c) {
 }
 
 void ChatTUI::onMessages(int c) {
-    if (c == KEY_UP) {
+    if (c == DependenciesTUI::TUI_UP) {
         chat.moveTo(Chat::UP);
         return;
     }
-    if (c == KEY_DOWN) {
+    if (c == DependenciesTUI::TUI_DOWN) {
         chat.moveTo(Chat::DOWN);
         return;
     }
@@ -185,27 +185,27 @@ void ChatTUI::onMessages(int c) {
 
 void ChatTUI::onTextBox(int c) {
 
-    if (c == KEY_UP) {
+    if (c == DependenciesTUI::TUI_UP) {
         textBox.moveTo(TextBox::UP);
         return;
     }
-    if (c == KEY_DOWN) {
+    if (c == DependenciesTUI::TUI_DOWN) {
         textBox.moveTo(TextBox::DOWN);
         return;
     }
-    if (c == KEY_LEFT) {
+    if (c == DependenciesTUI::TUI_LEFT) {
         textBox.moveTo(TextBox::LEFT);
         return;
     }
-    if (c == KEY_RIGHT) {
+    if (c == DependenciesTUI::TUI_RIGHT) {
         textBox.moveTo(TextBox::RIGHT);
         return;
     }
-    if (c == KEY_BACKSPACE) {
+    if (c == DependenciesTUI::TUI_BACKSPACE) {
         textBox.removeCharacter();
         return;
     }
-    if (c == KEY_ENTER || c == '\n' || c == '\r') {
+    if (c == DependenciesTUI::TUI_ENTER || c == '\n' || c == '\r') {
         sendMessage();
         return;
     }

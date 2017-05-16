@@ -54,7 +54,7 @@ SOFTWARE.
 #include <stdexcept> // domain_error, invalid_argument, out_of_range
 #include <string> // getline, stoi, string, to_string
 #include <type_traits> // add_pointer, conditional, decay, enable_if, false_type, integral_constant, is_arithmetic, is_base_of, is_const, is_constructible, is_convertible, is_default_constructible, is_enum, is_floating_point, is_integral, is_nothrow_move_assignable, is_nothrow_move_constructible, is_pointer, is_reference, is_same, is_scalar, is_signed, remove_const, remove_cv, remove_pointer, remove_reference, true_type, underlying_type
-#include <utility> // declval, forward, make_pair, move, pair, swap
+#include <utility> // declval, forward, make_pair, tui_move, pair, swap
 #include <vector> // vector
 
 // exclude unsupported compilers
@@ -5271,7 +5271,7 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array (move semantics)
+        // add element to array (tui_move semantics)
         m_value.array->push_back(std::move(val));
         // invalidate object
         val.m_type = value_t::null;
@@ -12491,7 +12491,7 @@ basic_json_parser_74:
             {
                 return patch_operations::replace;
             }
-            if (op == "move")
+            if (op == "tui_move")
             {
                 return patch_operations::move;
             }
@@ -12670,13 +12670,13 @@ basic_json_parser_74:
 
                 case patch_operations::move:
                 {
-                    const std::string from_path = get_value("move", "from", true);
+                    const std::string from_path = get_value("tui_move", "from", true);
                     json_pointer from_ptr(from_path);
 
                     // the "from" location must exist - use at()
                     basic_json v = result.at(from_ptr);
 
-                    // The move operation is functionally identical to a
+                    // The tui_move operation is functionally identical to a
                     // "remove" operation on the "from" location, followed
                     // immediately by an "add" operation at the target
                     // location with the value that was just removed.
@@ -12720,7 +12720,7 @@ basic_json_parser_74:
 
                 case patch_operations::invalid:
                 {
-                    // op must be "add", "remove", "replace", "move", "copy", or
+                    // op must be "add", "remove", "replace", "tui_move", "copy", or
                     // "test"
                     JSON_THROW(std::invalid_argument("operation value '" + op + "' is invalid"));
                 }

@@ -1,2 +1,0 @@
-Options: 
-CMake: 3.7.1@/home/garik/Programs/CLion/bin/cmake/bin/cmake

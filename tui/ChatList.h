@@ -6,8 +6,8 @@
 #define TERMINALCHAT_CHATLIST_H
 
 
-#include "../../../models/ChatModel.h"
 #include <vector>
+#include "../models/ChatModel.h"
 
 class ChatList {
 public:

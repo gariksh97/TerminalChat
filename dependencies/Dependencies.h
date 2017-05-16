@@ -9,12 +9,15 @@
 
 
 
+
 struct Dependencies {
     static std::string inputPassword();
-    static void openTUI();
 
     static void saveToken(std::string);
     static std::string loadToken();
+
+    static void notify(std::string name, std::string text);
+
 };
 
 #endif //TERMINALCHAT_DEPENDENCIES_H

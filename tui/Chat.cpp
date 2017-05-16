@@ -2,9 +2,9 @@
 // Created by garik on 07.05.17.
 //
 
-#include <ncurses.h>
 #include "Chat.h"
 #include "TUIHelper.h"
+#include "../dependencies/DependenciesTUI.h"
 
 Chat::Chat() : chatModel("empty") {
 
@@ -24,19 +24,19 @@ void Chat::show(int fx, int fy, int tx, int ty) {
     for (int i = chatModel.getMessages().size() - 1 - offset; i >= 0 && fy <= ty; i--) {
         std::string message = chatModel.getMessages()[i].getMessage();
         while (tx - fx < message.length()) {
-            mvprintw(ty--, fx, message.substr(0, tx - fx).c_str());
+            DependenciesTUI::tui_mvprintw(ty--, fx, message.substr(0, tx - fx));
             message = message.substr(0, tx - fx);
         }
         if (message.length() != 0)
-            mvprintw(ty--, fx, message.c_str());
+            DependenciesTUI::tui_mvprintw(ty--, fx, message);
 
         std::string from = chatModel.getMessages()[i].getFrom() + ":";
         while (tx - fx < from.length()) {
-            mvprintw(ty--, fx, from.substr(0, tx - fx).c_str());
+            DependenciesTUI::tui_mvprintw(ty--, fx, from.substr(0, tx - fx));
             from = from.substr(tx - fx, from.length());
         }
         if (from.length() != 0)
-            mvprintw(ty--, fx, from.c_str());
+            DependenciesTUI::tui_mvprintw(ty--, fx, from);
 
         TUIHelper::drawHorizontalLine(fx, tx, ty--);
     }
