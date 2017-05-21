@@ -10,13 +10,9 @@ if (UNIX AND NOT APPLE)
     include_directories(${GTK2_INCLUDE_DIRS})
     link_directories(${GTK2_LIBRARY_DIRS})
 
-    #GTK3
-    pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-    include_directories(${GTK3_INCLUDE_DIRS})
-    link_directories(${GTK3_LIBRARY_DIRS})
-
     add_executable(TerminalChatLinux main.cpp
 
+            network/Errors.h
             network/Networking.cpp
             network/Networking.h
             network/Listener.h
@@ -49,7 +45,7 @@ if (UNIX AND NOT APPLE)
             )
 
     target_link_libraries(TerminalChatLinux
-            -lssl -lrt -lcrypto -lpthread -lncurses -lnotify
+            -lpthread  -lnotify -lcurl -lncursesw -lncurses
             )
 endif (UNIX AND NOT APPLE)
 
@@ -93,6 +89,6 @@ if (APPLE)
             )
 
     target_link_libraries(TerminalChatApple
-            -lssl -lcrypto -lpthread -lncurses
+            -lpthread -lncurses -lcurl -lncursesw
             )
 endif (APPLE)

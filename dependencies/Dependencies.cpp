@@ -27,7 +27,7 @@ std::string Dependencies::inputPassword() {
     SetStdinEcho(false);
 
     std::string password;
-    std::cin >> password;
+    std::getline(std::cin, password);
 
     SetStdinEcho(true);
     return password;

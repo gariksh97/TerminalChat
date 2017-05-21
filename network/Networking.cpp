@@ -7,10 +7,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <curl/curl.h>
 #include "../json/json.hpp"
 
-const std::string Networking::FULL_HOST = "http://93.189.43.66";
 const std::string Networking::HOST = "93.189.43.66";
+const std::string Networking::FULL_HOST = "http://" + HOST;
 const uint16_t Networking::PORT = 8080;
 
 
@@ -36,7 +37,7 @@ void Networking::add_request(Listener listener, std::string url) {
 
     std::function<void()> function = [this, listener, url]() -> void {
         add_request_impl(
-                listener, "v2/5185415ba171ea3a00704eed"
+                listener, url
         );
     };
     if (async) {
@@ -103,6 +104,31 @@ void Networking::add_request_impl(Listener listener, std::string url) {
     nlohmann::json json_result = nlohmann::json::parse(result);
 
     listener.onSuccess(json_result);
+}
+
+std::string Networking::encode(std::string s) {
+    CURL *curl = curl_easy_init();
+    std::string result;
+    if (curl) {
+        char *output = curl_easy_escape(curl, s.c_str(), s.length());
+        result = std::string(output);
+        curl_free(output);
+    }
+    return result;
+}
+
+std::string Networking::decode(std::string s) {
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '+') s[i] = ' ';
+    }
+    CURL *curl = curl_easy_init();
+    std::string result;
+    if (curl) {
+        char *output = curl_easy_unescape(curl, s.c_str(), s.length(), NULL);
+        result = std::string(output);
+        curl_free(output);
+    }
+    return result;
 }
 
 

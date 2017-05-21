@@ -18,9 +18,9 @@ void ChatList::setChats(std::vector<ChatModel> chats) {
 }
 
 void ChatList::show(int fx, int fy, int tx, int ty) {
-    /*if (fy != this->fy || ty != this->ty) {
-        offset = 0;
-    }*/
+    if (y < fy || y > ty) {
+        y = fy;
+    }
     this->fy = fy;
     this->ty = ty;
     this->x = fx;

@@ -26,6 +26,7 @@ private:
     void onMessages(int c);
 
     void sendMessage();
+    void getMessages();
 
     int state;
     int x, y;

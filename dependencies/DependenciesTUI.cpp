@@ -19,6 +19,7 @@ void DependenciesTUI::tui_raw() {
 }
 
 void DependenciesTUI::tui_initscr() {
+    setlocale(LC_ALL, "");
     initscr();
 }
 
@@ -47,6 +48,7 @@ void DependenciesTUI::tui_endwin(){
 }
 
 int DependenciesTUI::tui_getch(){
+    timeout(1000);
     return getch();
 }
 

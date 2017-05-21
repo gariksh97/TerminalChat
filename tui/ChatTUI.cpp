@@ -5,6 +5,11 @@
 #include "ChatTUI.h"
 #include "TUIHelper.h"
 #include "../dependencies/DependenciesTUI.h"
+#include "../network/Networking.h"
+#include "../network/Errors.h"
+#include "../dependencies/Dependencies.h"
+
+#undef OK
 
 int max(int a, int b) {
     return a > b ? a : b;
@@ -24,24 +29,15 @@ ChatTUI::~ChatTUI() {}
 
 void ChatTUI::start() {
 
-    ChatModel chat("Alex Kolchanov");
-    chat.addMessage(MessageModel("Garik", "Hello"));
-    chat.addMessage(MessageModel("Alex", "Hi"));
-
     std::vector<ChatModel> chats;
 
-    chats.push_back(ChatModel("Garik Shakhbazyan"));
-    chats.push_back(ChatModel("Trofimov Ivan"));
-    chats.push_back(ChatModel("Chat Room 1"));
-    chats.push_back(ChatModel("Chat Room 1"));
-    chats.push_back(ChatModel("Chat Room 1"));
-    chats.push_back(ChatModel("Chat Room 1"));
-    chats.push_back(chat);
+    chats.push_back(ChatModel("testerRoom"));
+    chats.push_back(ChatModel("testerRoom2"));
 
     this->chatList.setChats(chats);
     this->chat.setChat(chats[1]);
 
-     DependenciesTUI::tui_initscr();
+    DependenciesTUI::tui_initscr();
     DependenciesTUI::tui_keypad();
     DependenciesTUI::tui_raw();
     DependenciesTUI::tui_noecho();
@@ -156,6 +152,7 @@ void ChatTUI::exit() {
     DependenciesTUI::tui_endwin();
 }
 
+
 void ChatTUI::onChatsList(int c) {
     if (c == DependenciesTUI::TUI_UP) {
         chatList.moveTo(ChatList::UP);
@@ -168,6 +165,7 @@ void ChatTUI::onChatsList(int c) {
     if (c == DependenciesTUI::TUI_ENTER || c == '\n' || c == '\r') {
         chatList.setSelected();
         chat.setChat(chatList.getChat());
+        getMessages();
         return;
     }
 }
@@ -216,7 +214,51 @@ void ChatTUI::onTextBox(int c) {
 }
 
 void ChatTUI::sendMessage() {
-    chatList.getChat().addMessage(MessageModel("Garik", textBox.getText()));
-    chat.setChat(chatList.getChat());
+    std::string request = "api/sendMessage";
+    request += "/:token=" + Dependencies::loadToken();
+    request += "/:roomName=" + Networking::encode(chatList.getChat().getName());
+    request += "/:text=" + Networking::encode(textBox.getText());
     textBox.clear();
+    Networking::getInstance(false).add_request(
+            Listener(
+                    [this](nlohmann::json result) -> void {
+                        getMessages();
+                    },
+                    [](std::exception e) -> void {
+                        std::cout << "Exception:" << e.what() << std::endl;
+                    }
+            ),
+            request
+    );
+}
+
+void ChatTUI::getMessages() {
+    std::string name = chatList.getChat().getName();
+    std::string amount = "20";
+    std::string request = "api/getTopMessage";
+    request += "/:token=" + Dependencies::loadToken();
+    request += "/:roomName=" + Networking::encode(name);
+    request += "/:amount=" + Networking::encode(amount);
+    Networking::getInstance(false).add_request(
+            Listener(
+                    [this](nlohmann::json result) -> void {
+                        int result_code = result["code"];
+                        std::vector<MessageModel> chatMessages;
+                        if (result_code == Errors::OK) {
+                            nlohmann::json messages = result["messages:"];
+                            for (int i = 0; i < messages.size(); i++) {
+                                int fromId = messages[i]["userId"];
+                                std::string from = std::to_string(fromId);
+                                chatMessages.push_back(MessageModel(from, Networking::decode(messages[i]["text"])));
+                            }
+                        }
+                        chatList.getChat().setMessages(chatMessages);
+                        chat.setChat(chatList.getChat());
+                    },
+                    [](std::exception e) -> void {
+                        std::cout << "Exception:" << e.what() << std::endl;
+                    }
+            ),
+            request
+    );
 }

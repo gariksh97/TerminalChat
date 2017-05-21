@@ -1,6 +1,8 @@
 #include <iostream>
 #include "network/Networking.h"
 #include "dependencies/Dependencies.h"
+#include "tui/ChatTUI.h"
+#include "network/Errors.h"
 
 void reg(int argv, char **args) {
     if (argv <= 3) {
@@ -14,16 +16,16 @@ void reg(int argv, char **args) {
     std::string password = Dependencies::inputPassword();
     std::cout << std::endl;
     std::string request = "api/register";
-    request += "/:login=" + login + "";
-    request += "/:password=" + password + "";
-    request += "/:name=" + name + "";
+    request += "/:login=" + Networking::encode(login);
+    request += "/:password=" + Networking::encode(password);
+    request += "/:name=" + Networking::encode(name);
     Networking::getInstance(false).add_request(
             Listener(
                     [](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "50") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::REGISTER_ALREADY) {
                             std::cout << "User already registered. Use another login" << std::endl;
-                        } else {
+                        } else if (result_code == Errors::OK) {
                             std::cout << "Thanks for joining us. You're register" << std::endl;
                             Dependencies::saveToken(result["token"]);
                         }
@@ -47,18 +49,18 @@ void login(int argv, char **args) {
     std::string password = Dependencies::inputPassword();
     std::cout << std::endl;
     std::string request = "api/login";
-    request += "/:login=" + login + "";
-    request += "/:password=" + password + "";
+    request += "/:login=" + Networking::encode(login);
+    request += "/:password=" + Networking::encode(password);
     Networking::getInstance(false).add_request(
             Listener(
                     [](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "0") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::OK) {
                             std::cout << "We wait you!" << std::endl;
                             Dependencies::saveToken(result["token"]);
-                        } else if (result_code == "10") {
+                        } else if (result_code == Errors::INCORRECT_LOGIN_OR_PASSWORD) {
                             std::cout << "Incorrect login or password" << std::endl;
-                        } else if (result_code == "60") {
+                        } else if (result_code == Errors::USER_NOT_EXIST) {
                             std::cout << "User not exists" << std::endl;
                         }
                     },
@@ -82,18 +84,18 @@ void create(int argv, char **args) {
     std::cout << std::endl;
 
     std::string request = "api/createRoom";
-    request += "/:token" + Dependencies::loadToken() + "";
-    request += "/:name=" + name + "";
-    request += "/:pw=" + password + "";
+    request += "/:token=" + Dependencies::loadToken();
+    request += "/:name=" + Networking::encode(name);
+    request += "/:pw=" + Networking::encode(password);
     Networking::getInstance(false).add_request(
             Listener(
                     [name](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "0") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::OK) {
                             std::cout << "Room \"" + name + "\" is created";
-                        } else if (result_code == "30") {
+                        } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;
-                        } else if (result_code == "90") {
+                        } else if (result_code == Errors::ROOM_ALREADY_EXISTS) {
                             std::cout << "Room already exists" << std::endl;
                         }
                     },
@@ -115,18 +117,18 @@ void send(int argv, char **args) {
     std::string message = args[3];
 
     std::string request = "api/sendMessage";
-    request += "/:token" + Dependencies::loadToken() + "";
-    request += "/:roomName=" + name + "";
-    request += "/:text=" + message + "";
+    request += "/:token=" + Dependencies::loadToken();
+    request += "/:roomName=" + Networking::encode(name);
+    request += "/:text=" + Networking::encode(message);
     Networking::getInstance(false).add_request(
             Listener(
                     [](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "0") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::OK) {
                             std::cout << "Message sent";
-                        } else if (result_code == "30") {
+                        } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;
-                        } else if (result_code == "80") {
+                        } else if (result_code == Errors::ROOM_NOT_EXISTS) {
                             std::cout << "Room not exists" << std::endl;
                         }
                     },
@@ -141,24 +143,30 @@ void send(int argv, char **args) {
 void get(int argv, char **args) {
     if (argv <= 3) {
         std::cout << "Not enough arguments" << std::endl;
-        std::cout << "use \"chat send <name of room> <message>\"" << std::endl;
+        std::cout << "use \"chat get <name of room> <count>\"" << std::endl;
         return;
     }
     std::string name = args[2];
-    std::string message = args[3];
+    std::string amount = args[3];
 
-    std::string request = "api/getMessage";
-    request += "/:token" + Dependencies::loadToken() + "";
-    request += "/:roomName=" + name + "";
+    std::string request = "api/getTopMessage";
+    request += "/:token=" + Dependencies::loadToken() + "";
+    request += "/:roomName=" + Networking::encode(name) + "";
+    request += "/:amount=" + Networking::encode(amount) + "";
     Networking::getInstance(false).add_request(
             Listener(
                     [](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "0") {
-                            std::cout << "Message sent";
-                        } else if (result_code == "30") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::OK) {
+                            nlohmann::json messages = result["messages:"];
+                            for (int i = 0; i < messages.size(); i++) {
+                                std::cout << Networking::decode(messages[i]["date"]) << std::endl;
+                                std::cout << Networking::decode(messages[i]["text"]) << std::endl;
+                                std::cout << std::endl;
+                            }
+                        } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;
-                        } else if (result_code == "80") {
+                        } else if (result_code == Errors::ROOM_NOT_EXISTS) {
                             std::cout << "Room not exists" << std::endl;
                         }
                     },
@@ -171,28 +179,35 @@ void get(int argv, char **args) {
 }
 
 void join(int argv, char **args) {
-    if (argv <= 3) {
+    if (argv <= 2) {
         std::cout << "Not enough arguments" << std::endl;
-        std::cout << "use \"chat send <name of room> <message>\"" << std::endl;
+        std::cout << "use \"chat join <name of room>\"" << std::endl;
         return;
     }
     std::string name = args[2];
-    std::string message = args[3];
 
-    std::string request = "api/sendMessage";
-    request += "/:token" + Dependencies::loadToken() + "";
-    request += "/:roomName=" + name + "";
-    request += "/:text=" + message + "";
+    std::cout << "Enter password: ";
+    std::string password = Dependencies::inputPassword();
+    std::cout << std::endl;
+
+    std::string request = "api/connectToRoom";
+    request += "/:token=" + Dependencies::loadToken() + "";
+    request += "/:roomName=" + Networking::encode(name) + "";
+    request += "/:pw=" + Networking::encode(password) + "";
     Networking::getInstance(false).add_request(
             Listener(
                     [](nlohmann::json result) -> void {
-                        std::string result_code = result["code"];
-                        if (result_code == "0") {
-                            std::cout << "Message sent";
-                        } else if (result_code == "30") {
+                        int result_code = result["code"];
+                        if (result_code == Errors::OK) {
+                            std::cout << "You're connected to room" << std::endl;
+                        } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;
-                        } else if (result_code == "80") {
-                            std::cout << "Room not exists" << std::endl;
+                        } else if (result_code == Errors::ALREADY_IN_ROOM) {
+                            std::cout << "You're already in this room" << std::endl;
+                        } else if (result_code == Errors::INCORRECT_LOGIN_OR_PASSWORD) {
+                            std::cout << "Wrong password" << std::endl;
+                        } else if (result_code == Errors::ROOM_NOT_EXISTS) {
+                            std::cout << "There isn't such room" << std::endl;
                         }
                     },
                     [](std::exception e) -> void {
@@ -204,14 +219,11 @@ void join(int argv, char **args) {
 }
 
 int main(int argv, char **args) {
-    if (argv == 1) {
-        std::cout << "Not enough arguments" << std::endl;
-        return 1;
-    }
-    std::string request = args[1];
+    std::string request = argv != 1 ? args[1] : "";
     if (request == "tui") {
         Networking::getInstance(true);
-        Dependencies::openTUI();
+        ChatTUI chatTUI;
+        chatTUI.start();
     } else if (request == "register") {
         reg(argv, args);
     } else if (request == "login") {
@@ -221,16 +233,17 @@ int main(int argv, char **args) {
     } else if (request == "create") {
         create(argv, args);
     } else if (request == "join") {
-
+        join(argv, args);
     } else if (request == "get") {
         get(argv, args);
     } else {
-        std::cout << "There is no such command" << std::endl;
         std::cout << "Use: " << std::endl;
         std::cout << "\tregister" << std::endl;
         std::cout << "\tlogin" << std::endl;
         std::cout << "\tsend" << std::endl;
         std::cout << "\tcreate" << std::endl;
+        std::cout << "\tjoin" << std::endl;
+        std::cout << "\ttui" << std::endl;
     }
 }
 

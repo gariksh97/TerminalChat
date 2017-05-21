@@ -19,6 +19,7 @@ public:
         return instance;
     }
     static std::string encode(std::string s);
+    static std::string decode(std::string s);
 
 
     void add_request(Listener listener, std::string url);
