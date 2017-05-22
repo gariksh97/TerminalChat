@@ -22,7 +22,7 @@ public:
     void addCharacter(std::string c);
     void removeCharacter();
 
-    unsigned int getPos();
+    int getPos();
 
     void show(int fx, int fy, int tx, int ty);
     void moveTo(int direction);

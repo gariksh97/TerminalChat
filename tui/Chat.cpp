@@ -19,24 +19,25 @@ void Chat::setChat(ChatModel const &model) {
     this->offset = 0;
 }
 
+void printText(int& fx, int& fy, int& tx, int& ty, std::string value) {
+    int len = tx - fx;
+    int ost = value.length() % len;
+    DependenciesTUI::tui_mvprintw(ty--, fx, value.substr(value.length() - ost, value.length()));
+    value = value.substr(0, value.length() - ost);
+    while (value.length() != 0) {
+        DependenciesTUI::tui_mvprintw(ty--, fx, value.substr(value.length() - len, value.length()));
+        value = value.substr(0, value.length() - len);
+    }
+}
+
 void Chat::show(int fx, int fy, int tx, int ty) {
     if (chatModel.getMessages().size() == 0) return;
+    if (tx == fx) return;
     for (int i = chatModel.getMessages().size() - 1 - offset; i >= 0 && fy <= ty; i--) {
         std::string message = chatModel.getMessages()[i].getMessage();
-        while (tx - fx < message.length()) {
-            DependenciesTUI::tui_mvprintw(ty--, fx, message.substr(0, tx - fx));
-            message = message.substr(0, tx - fx);
-        }
-        if (message.length() != 0)
-            DependenciesTUI::tui_mvprintw(ty--, fx, message);
-
         std::string from = chatModel.getMessages()[i].getFrom() + ":";
-        while (tx - fx < from.length()) {
-            DependenciesTUI::tui_mvprintw(ty--, fx, from.substr(0, tx - fx));
-            from = from.substr(tx - fx, from.length());
-        }
-        if (from.length() != 0)
-            DependenciesTUI::tui_mvprintw(ty--, fx, from);
+        printText(fx, fy, tx, ty, message);
+        printText(fx, fy, tx, ty, from);
 
         TUIHelper::drawHorizontalLine(fx, tx, ty--);
     }

@@ -161,6 +161,7 @@ void get(int argv, char **args) {
                             nlohmann::json messages = result["messages:"];
                             for (int i = 0; i < messages.size(); i++) {
                                 std::cout << Networking::decode(messages[i]["date"]) << std::endl;
+                                std::cout << Dependencies::getNameById(messages[i]["userId"]) << std::endl;
                                 std::cout << Networking::decode(messages[i]["text"]) << std::endl;
                                 std::cout << std::endl;
                             }
@@ -218,32 +219,78 @@ void join(int argv, char **args) {
     );
 }
 
+void getUsers() {
+    Networking::getInstance(false).add_request(
+            Listener(
+                    [](nlohmann::json result) -> void {
+                        Dependencies::saveUsers(result["users"]);
+                    },
+                    [](std::exception e) -> void {
+                        std::cout << "Exception:" << e.what() << std::endl;
+                    }
+            ),
+            "api/getUsers"
+    );
+}
+
 int main(int argv, char **args) {
     std::string request = argv != 1 ? args[1] : "";
+
+
     if (request == "tui") {
-        Networking::getInstance(true);
+        Networking::getInstance(true).add_request(
+                Listener(
+                        [](nlohmann::json result) -> void {
+                            Dependencies::saveRooms(result["rooms"]);
+                        },
+                        [](std::exception e) -> void {
+                            exit(1);
+                        }
+                ),
+                "api/getUsers"
+        );
+        Networking::getInstance(true).add_request(
+                Listener(
+                        [](nlohmann::json result) -> void {
+                            Dependencies::saveRooms(result["rooms"]);
+                        },
+                        [](std::exception e) -> void {
+                            exit(1);
+                        }
+                ),
+                "api/getRooms"
+        );
         ChatTUI chatTUI;
         chatTUI.start();
-    } else if (request == "register") {
-        reg(argv, args);
-    } else if (request == "login") {
-        login(argv, args);
-    } else if (request == "send") {
-        send(argv, args);
-    } else if (request == "create") {
-        create(argv, args);
-    } else if (request == "join") {
-        join(argv, args);
-    } else if (request == "get") {
-        get(argv, args);
     } else {
-        std::cout << "Use: " << std::endl;
-        std::cout << "\tregister" << std::endl;
-        std::cout << "\tlogin" << std::endl;
-        std::cout << "\tsend" << std::endl;
-        std::cout << "\tcreate" << std::endl;
-        std::cout << "\tjoin" << std::endl;
-        std::cout << "\ttui" << std::endl;
+
+        if (request == "register") {
+            getUsers();
+            reg(argv, args);
+        } else if (request == "login") {
+            getUsers();
+            login(argv, args);
+        } else if (request == "send") {
+            getUsers();
+            send(argv, args);
+        } else if (request == "create") {
+            getUsers();
+            create(argv, args);
+        } else if (request == "join") {
+            getUsers();
+            join(argv, args);
+        } else if (request == "get") {
+            getUsers();
+            get(argv, args);
+        } else {
+            std::cout << "Use: " << std::endl;
+            std::cout << "\tregister" << std::endl;
+            std::cout << "\tlogin" << std::endl;
+            std::cout << "\tsend" << std::endl;
+            std::cout << "\tcreate" << std::endl;
+            std::cout << "\tjoin" << std::endl;
+            std::cout << "\ttui" << std::endl;
+        }
     }
 }
 

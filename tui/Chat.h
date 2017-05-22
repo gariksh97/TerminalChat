@@ -22,6 +22,7 @@ public:
     void moveTo(int direction);
 
 private:
+
     ChatModel chatModel;
     int offset;
 };

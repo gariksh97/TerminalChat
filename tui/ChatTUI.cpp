@@ -29,14 +29,28 @@ ChatTUI::~ChatTUI() {}
 
 void ChatTUI::start() {
 
-    std::vector<ChatModel> chats;
 
-    chats.push_back(ChatModel("testerRoom"));
-    chats.push_back(ChatModel("testerRoom2"));
+    Networking::getInstance(false).add_request(
+            Listener(
+                    [this](nlohmann::json result) -> void {
+                        std::vector <ChatModel> chats;
+                        nlohmann::json chatsResult = result["uars"];
+                        for (int i = 0; i < chatsResult.size(); i++) {
+                            int roomId = chatsResult[i]["roomId"];
+                            std::string name = Dependencies::getRoomNameById(roomId);
+                            chats.push_back(ChatModel(name));
+                        }
+                        this->chatList.setChats(chats);
+                    },
+                    [](std::exception e) -> void {}
+            ),
+            "api/roomsForUser/:token=" + Networking::encode(Dependencies::loadToken())
+    );
 
-    this->chatList.setChats(chats);
-    this->chat.setChat(chats[1]);
 
+    //std::vector<ChatModel> chats;
+    //chats.push_back(ChatModel("testerRoom"));
+    //this->chatList.setChats(chats);
     DependenciesTUI::tui_initscr();
     DependenciesTUI::tui_keypad();
     DependenciesTUI::tui_raw();

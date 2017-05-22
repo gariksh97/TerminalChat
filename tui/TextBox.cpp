@@ -66,11 +66,19 @@ void TextBox::moveTo(int direction) {
                 y--;
                 pos -= tx - fx;
             }
+            if (y == fy) {
+                y++;
+                offset -= 1;
+            }
             break;
         case DOWN:
-            if (pos + (tx - fx) < text.length()) {
+            if (pos + (tx - fx) <= text.length()) {
                 y++;
                 pos += tx - fx;
+            }
+            if (y == ty) {
+                y--;
+                offset += 1;
             }
             break;
         case LEFT:
@@ -79,26 +87,29 @@ void TextBox::moveTo(int direction) {
                 if (x != fx) {
                     --x;
                 } else {
-                    x = tx;
-                    --y;
+                    x = tx - 1;
+                    pos += tx - fx;
+                    moveTo(UP);
                 }
             }
             break;
         case RIGHT:
-            if (pos + 1 <= text.length()) {
+            if (pos < text.length()) {
                 pos++;
-                if (x != tx) {
+                if (x + 1 != tx) {
                     ++x;
                 } else {
                     x = fx;
-                    ++y;
+                    pos -= tx - fx;
+                    moveTo(DOWN);
                 }
             }
             break;
+        default:break;
     }
 }
 
-unsigned int TextBox::getPos() {
+int TextBox::getPos() {
     return pos;
 }
 

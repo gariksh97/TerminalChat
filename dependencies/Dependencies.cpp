@@ -4,6 +4,8 @@
 
 #include "Dependencies.h"
 #include <iostream>
+#include <map>
+
 
 
 #if linux
@@ -11,6 +13,10 @@
 #include <libnotify/notify.h>
 #include <termio.h>
 #include <fstream>
+
+
+std::map<int, std::string> Dependencies::users;
+std::map<int, std::string> Dependencies::rooms;
 
 void SetStdinEcho(bool enable) {
     struct termios tty;
@@ -58,6 +64,30 @@ void Dependencies::notify(std::string name, std::string text) {
         std::cerr << "show has failed" << std::endl;
         return;
     }
+}
+
+void Dependencies::saveUsers(nlohmann::json result) {
+    for (int i = 0; i < result.size(); i++) {
+        int userId = result[i]["userId"];
+        std::string name = result[i]["name"];
+        users[userId] = name;
+    }
+}
+
+void Dependencies::saveRooms(nlohmann::json result) {
+    for (int i = 0; i < result.size(); i++) {
+        int roomId = result[i]["roomId"];
+        std::string name = result[i]["name"];
+        rooms[roomId] = name;
+    }
+}
+
+std::string Dependencies::getNameById(int id) {
+    return Dependencies::users[id];
+}
+
+std::string Dependencies::getRoomNameById(int id){
+    return Dependencies::rooms[id];
 }
 
 #elif _WIN32
