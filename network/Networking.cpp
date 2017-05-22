@@ -10,7 +10,7 @@
 #include <curl/curl.h>
 #include "../json/json.hpp"
 
-const std::string Networking::HOST = "localhost";
+const std::string Networking::HOST = "93.189.43.66";
 const std::string Networking::FULL_HOST = "http://" + HOST;
 const uint16_t Networking::PORT = 8080;
 
