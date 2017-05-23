@@ -5,6 +5,19 @@
 #include "DependenciesTUI.h"
 
 #if linux
+void DependenciesTUI::tui_initscr() {
+    setlocale(LC_ALL, "");
+    initscr();
+}
+#endif
+#if __APPLE__
+void DependenciesTUI::tui_initscr() {
+    setlocale(LC_ALL, "");
+    initscr();
+}
+#endif
+
+#if linux || __APPLE__
 
 void DependenciesTUI::tui_mvprintw(int y, int x, std::string value) {
     mvprintw(y, x, value.c_str());
@@ -18,10 +31,7 @@ void DependenciesTUI::tui_raw() {
     raw();
 }
 
-void DependenciesTUI::tui_initscr() {
-    setlocale(LC_ALL, "");
-    initscr();
-}
+
 
 void DependenciesTUI::tui_nonl(){
     nonl();

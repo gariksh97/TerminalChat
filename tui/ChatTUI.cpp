@@ -213,7 +213,7 @@ void ChatTUI::onTextBox(int c) {
         textBox.moveTo(TextBox::RIGHT);
         return;
     }
-    if (c == DependenciesTUI::TUI_BACKSPACE) {
+    if (c == DependenciesTUI::TUI_BACKSPACE || c == DependenciesTUI::TUI_DC) {
         textBox.removeCharacter();
         return;
     }

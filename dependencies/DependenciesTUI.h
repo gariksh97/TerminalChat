@@ -37,6 +37,7 @@ public:
     static constexpr int TUI_RIGHT        = KEY_RIGHT;
     static constexpr int TUI_ENTER        = KEY_ENTER;
     static constexpr int TUI_BACKSPACE    = KEY_BACKSPACE;
+    static constexpr int TUI_DC           = KEY_DC;
 
 };
 

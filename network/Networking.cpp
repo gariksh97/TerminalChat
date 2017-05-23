@@ -22,17 +22,6 @@ Networking::Networking(bool async) : threadExecutor(1) {
 Networking::~Networking() {
 }
 
-/*
-std::string Networking::encode(std::string url) {
-    char *escape_char_str = (char *) "!*'();:@&=+$,/?#[]";
-    char *encoded_uri = NULL;
-    encoded_uri = g_uri_escape_string(url.c_str(), escape_char_str, TRUE);
-    std::string result = encoded_uri;
-    free(encoded_uri);
-    return result;
-}
-*/
-
 void Networking::add_request(Listener listener, std::string url) {
 
     std::function<void()> function = [this, listener, url]() -> void {

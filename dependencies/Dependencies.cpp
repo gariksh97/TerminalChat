@@ -6,12 +6,28 @@
 #include <iostream>
 #include <map>
 
-
-
-#if linux
-
+#ifdef linux
 #include <libnotify/notify.h>
+
+void Dependencies::notify(std::string name, std::string text) {
+    notify_init("TerminalChat");
+    NotifyNotification *n = notify_notification_new(
+            name.c_str(), text.c_str(), 0
+    );
+    notify_notification_set_timeout(n, 10000); // 10 seconds
+    if (!notify_notification_show(n, 0)) {
+        std::cerr << "show has failed" << std::endl;
+        return;
+    }
+}
+
+#endif
+
+
+#if linux || __APPLE__
+
 #include <termio.h>
+#include <unistd.h>
 #include <fstream>
 
 
@@ -54,17 +70,7 @@ std::string Dependencies::loadToken() {
     return token;
 }
 
-void Dependencies::notify(std::string name, std::string text) {
-    notify_init("TerminalChat");
-    NotifyNotification *n = notify_notification_new(
-            name.c_str(), text.c_str(), 0
-    );
-    notify_notification_set_timeout(n, 10000); // 10 seconds
-    if (!notify_notification_show(n, 0)) {
-        std::cerr << "show has failed" << std::endl;
-        return;
-    }
-}
+
 
 void Dependencies::saveUsers(nlohmann::json result) {
     for (int i = 0; i < result.size(); i++) {
