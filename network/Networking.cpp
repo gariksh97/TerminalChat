@@ -44,7 +44,7 @@ void Networking::add_request_impl(Listener listener, std::string url) {
     request << "Connection: close\r\n\r\n";
     char message[1000] = {};
     request.read(message, 1000);
-#ifdef SO_DEBUG
+#ifdef DEBUG
     std::cout << message << std::endl;
 #endif
     int sock;
