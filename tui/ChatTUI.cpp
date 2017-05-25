@@ -56,8 +56,17 @@ void ChatTUI::start() {
     DependenciesTUI::tui_raw();
     DependenciesTUI::tui_noecho();
     DependenciesTUI::tui_nonl();
+    int timerSize = 10, timer = 0;
     bool shouldQuit = false;
     while (!shouldQuit) {
+        if (chatList.isSelected()) {
+            if (timer != timerSize) {
+                timer++;
+            } else {
+                timer = 0;
+                getMessages();
+            }
+        }
         int maxX = DependenciesTUI::tui_getmaxx();
         int maxY = DependenciesTUI::tui_getmaxy();
         int chatListX = min(20, maxX / 2);
@@ -65,7 +74,6 @@ void ChatTUI::start() {
         int chatY = maxY - max(10, maxY / 3);
         DependenciesTUI::tui_clear();
         this->chatList.show(0, 0, chatListX, chatListY);
-        this->chatList.setSelected();
         this->chat.show(
                 chatListX + 2,
                 0,

@@ -7,7 +7,7 @@
 
 ChatList::ChatList() {
     pos = 0;
-    selected = 0;
+    selected = -1;
     offset = 0;
 }
 
@@ -77,6 +77,10 @@ void ChatList::setSelected() {
     this->selected = pos;
 }
 
-ChatModel& ChatList::getChat(){
+ChatModel &ChatList::getChat() {
     return chats[selected];
+}
+
+bool ChatList::isSelected() {
+    return selected != -1;
 }

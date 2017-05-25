@@ -31,6 +31,8 @@ public:
 
     void setChats(std::vector<ChatModel> chats);
 
+    bool isSelected();
+
 private:
     static constexpr int ITEM_SIZE = 2;
 
