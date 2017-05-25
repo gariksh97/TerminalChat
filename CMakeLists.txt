@@ -89,6 +89,6 @@ if (APPLE)
             )
 
     target_link_libraries(TerminalChatApple
-            -lpthread -lncurses -lcurl -lncursesw
+            -lpthread -lncurses -lcurl
             )
 endif (APPLE)
