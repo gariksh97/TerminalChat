@@ -26,7 +26,7 @@ void Dependencies::notify(std::string name, std::string text) {
 
 #if linux || __APPLE__
 
-#include <termio.h>
+#include <termios.h>
 #include <unistd.h>
 #include <fstream>
 
