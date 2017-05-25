@@ -4,12 +4,6 @@ project(TerminalChat)
 set(CMAKE_CXX_STANDARD 11)
 
 if (UNIX AND NOT APPLE)
-    #GTK2
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
-    include_directories(${GTK2_INCLUDE_DIRS})
-    link_directories(${GTK2_LIBRARY_DIRS})
-
     add_executable(TerminalChatLinux main.cpp
 
             network/Errors.h
@@ -45,7 +39,7 @@ if (UNIX AND NOT APPLE)
             )
 
     target_link_libraries(TerminalChatLinux
-            -lpthread  -lnotify -lcurl -lncursesw -lncurses
+            -lpthread -lcurl -lncursesw -lncurses
             )
 endif (UNIX AND NOT APPLE)
 

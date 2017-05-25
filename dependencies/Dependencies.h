@@ -24,8 +24,6 @@ public:
     static void saveRooms(nlohmann::json result);
     static std::string getUserNameById(int id);
     static std::string getRoomNameById(int id);
-
-    static void notify(std::string name, std::string text);
 };
 
 #endif //TERMINALCHAT_DEPENDENCIES_H
