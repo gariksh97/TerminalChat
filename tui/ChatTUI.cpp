@@ -33,7 +33,7 @@ void ChatTUI::start() {
     Networking::getInstance(false).add_request(
             Listener(
                     [this](nlohmann::json result) -> void {
-                        std::vector <ChatModel> chats;
+                        std::vector<ChatModel> chats;
                         nlohmann::json chatsResult = result["uars"];
                         for (int i = 0; i < chatsResult.size(); i++) {
                             int roomId = chatsResult[i]["roomId"];
@@ -228,22 +228,26 @@ void ChatTUI::onTextBox(int c) {
 }
 
 void ChatTUI::sendMessage() {
-    std::string request = "api/sendMessage";
-    request += "/:token=" + Dependencies::loadToken();
-    request += "/:roomName=" + Networking::encode(chatList.getChat().getName());
-    request += "/:text=" + Networking::encode(textBox.getText());
-    textBox.clear();
-    Networking::getInstance(false).add_request(
-            Listener(
-                    [this](nlohmann::json result) -> void {
-                        getMessages();
-                    },
-                    [](std::exception e) -> void {
-                        std::cout << "Exception:" << e.what() << std::endl;
-                    }
-            ),
-            request
-    );
+    if (textBox.getText().length() == 0) {
+        std::string request = "api/sendMessage";
+        request += "/:token=" + Dependencies::loadToken();
+        request += "/:roomName=" + Networking::encode(chatList.getChat().getName());
+        request += "/:text=" + Networking::encode(textBox.getText());
+        textBox.clear();
+        Networking::getInstance(false).add_request(
+                Listener(
+                        [this](nlohmann::json result) -> void {
+                            getMessages();
+                        },
+                        [](std::exception e) -> void {
+                            std::cout << "Exception:" << e.what() << std::endl;
+                        }
+                ),
+                request
+        );
+    } else {
+        getMessages();
+    }
 }
 
 void ChatTUI::getMessages() {
