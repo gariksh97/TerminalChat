@@ -130,6 +130,8 @@ void send(int argv, char **args) {
                             std::cout << "Please register or login again" << std::endl;
                         } else if (result_code == Errors::ROOM_NOT_EXISTS) {
                             std::cout << "Room not exists" << std::endl;
+                        } else if (result_code == Errors::ROOM_NOT_LOGIN) {
+                            std::cout << "You not enter in this room" << std::endl;
                         }
                     },
                     [](std::exception e) -> void {
@@ -169,6 +171,8 @@ void get(int argv, char **args) {
                             std::cout << "Please register or login again" << std::endl;
                         } else if (result_code == Errors::ROOM_NOT_EXISTS) {
                             std::cout << "Room not exists" << std::endl;
+                        } else if (result_code == Errors::ROOM_NOT_LOGIN) {
+                            std::cout << "You not enter in this room" << std::endl;
                         }
                     },
                     [](std::exception e) -> void {
