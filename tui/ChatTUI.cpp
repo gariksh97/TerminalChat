@@ -21,11 +21,17 @@ int min(int a, int b) {
 
 ChatTUI::ChatTUI() {
     state = CHATS;
+    timerSize = 10;
     y = 0;
     x = 0;
 }
 
+
 ChatTUI::~ChatTUI() {}
+
+void ChatTUI::setTimerSize(int timerSize) {
+    this->timerSize = timerSize;
+}
 
 void ChatTUI::start() {
 
@@ -56,7 +62,7 @@ void ChatTUI::start() {
     DependenciesTUI::tui_raw();
     DependenciesTUI::tui_noecho();
     DependenciesTUI::tui_nonl();
-    int timerSize = 10, timer = 0;
+    int timerSize = 2, timer = 0;
     bool shouldQuit = false;
     while (!shouldQuit) {
         if (chatList.isSelected()) {
@@ -236,7 +242,7 @@ void ChatTUI::onTextBox(int c) {
 }
 
 void ChatTUI::sendMessage() {
-    if (textBox.getText().length() == 0) {
+    if (textBox.getText().size() != 0) {
         std::string request = "api/sendMessage";
         request += "/:token=" + Dependencies::loadToken();
         request += "/:roomName=" + Networking::encode(chatList.getChat().getName());

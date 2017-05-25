@@ -20,6 +20,7 @@ public:
 
     void start();
     void exit();
+    void setTimerSize(int timerSize);
 private:
     void onTextBox(int c);
     void onChatsList(int c);
@@ -30,6 +31,7 @@ private:
 
     int state;
     int x, y;
+    int timerSize;
 
     ChatList chatList;
     Chat chat;

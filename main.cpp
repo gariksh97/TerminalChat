@@ -265,6 +265,9 @@ int main(int argv, char **args) {
                 "api/getRooms"
         );
         ChatTUI chatTUI;
+        if (argv >= 3) {
+            chatTUI.setTimerSize(atoi(args[2]));
+        }
         chatTUI.start();
     } else {
 
@@ -288,7 +291,7 @@ int main(int argv, char **args) {
             std::cout << "\tsend" << std::endl;
             std::cout << "\tcreate" << std::endl;
             std::cout << "\tjoin" << std::endl;
-            std::cout << "\ttui" << std::endl;
+            std::cout << "\ttui <update time = 10>" << std::endl;
         }
     }
 }
