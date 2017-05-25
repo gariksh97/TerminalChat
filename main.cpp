@@ -269,19 +269,14 @@ int main(int argv, char **args) {
     } else {
 
         if (request == "register") {
-            getUsers();
             reg(argv, args);
         } else if (request == "login") {
-            getUsers();
             login(argv, args);
         } else if (request == "send") {
-            getUsers();
             send(argv, args);
         } else if (request == "create") {
-            getUsers();
             create(argv, args);
         } else if (request == "join") {
-            getUsers();
             join(argv, args);
         } else if (request == "get") {
             getUsers();
