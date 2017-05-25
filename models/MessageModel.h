@@ -18,8 +18,13 @@ public:
 
     std::string getMessage();
 
+    std::string getTime();
+    void setTime(std::string time);
+
+
 private:
     std::string from;
+    std::string time;
     std::string message;
 };
 

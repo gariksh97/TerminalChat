@@ -281,7 +281,9 @@ void ChatTUI::getMessages() {
                             for (int i = 0; i < messages.size(); i++) {
                                 int fromId = messages[i]["userId"];
                                 std::string from = Dependencies::getUserNameById(fromId);
-                                chatMessages.push_back(MessageModel(from, Networking::decode(messages[i]["text"])));
+                                MessageModel message = MessageModel(from, Networking::decode(messages[i]["text"]));
+                                message.setTime(messages[i]["date"]);
+                                chatMessages.push_back(message);
                             }
                         }
                         chatList.getChat().setMessages(chatMessages);

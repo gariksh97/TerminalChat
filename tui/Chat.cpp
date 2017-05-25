@@ -19,7 +19,7 @@ void Chat::setChat(ChatModel const &model) {
     this->offset = 0;
 }
 
-void printText(int& fx, int& fy, int& tx, int& ty, std::string value) {
+void printText(int &fx, int &fy, int &tx, int &ty, std::string value) {
     int len = tx - fx;
     int ost = value.length() % len;
     DependenciesTUI::tui_mvprintw(ty--, fx, value.substr(value.length() - ost, value.length()));
@@ -35,7 +35,8 @@ void Chat::show(int fx, int fy, int tx, int ty) {
     if (tx == fx) return;
     for (int i = chatModel.getMessages().size() - 1 - offset; i >= 0 && fy <= ty; i--) {
         std::string message = chatModel.getMessages()[i].getMessage();
-        std::string from = chatModel.getMessages()[i].getFrom() + ":";
+        std::string time = chatModel.getMessages()[i].getTime();
+        std::string from = chatModel.getMessages()[i].getFrom() + " (" + time + ")" ":";
         printText(fx, fy, tx, ty, message);
         printText(fx, fy, tx, ty, from);
 

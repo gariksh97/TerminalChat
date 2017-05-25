@@ -25,3 +25,11 @@ std::string MessageModel::getFrom() {
 std::string MessageModel::getMessage() {
     return this->message;
 }
+
+void MessageModel::setTime(std::string time) {
+    this->time = time;
+}
+
+std::string MessageModel::getTime() {
+    return this->time;
+}
