@@ -262,7 +262,7 @@ void ChatTUI::getMessages() {
                             nlohmann::json messages = result["messages:"];
                             for (int i = 0; i < messages.size(); i++) {
                                 int fromId = messages[i]["userId"];
-                                std::string from = std::to_string(fromId);
+                                std::string from = Dependencies::getUserNameById(fromId);
                                 chatMessages.push_back(MessageModel(from, Networking::decode(messages[i]["text"])));
                             }
                         }

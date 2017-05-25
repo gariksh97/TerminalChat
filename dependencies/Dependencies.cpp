@@ -88,7 +88,7 @@ void Dependencies::saveRooms(nlohmann::json result) {
     }
 }
 
-std::string Dependencies::getNameById(int id) {
+std::string Dependencies::getUserNameById(int id) {
     return Dependencies::users[id];
 }
 

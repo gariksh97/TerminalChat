@@ -163,7 +163,7 @@ void get(int argv, char **args) {
                             nlohmann::json messages = result["messages:"];
                             for (int i = 0; i < messages.size(); i++) {
                                 std::cout << Networking::decode(messages[i]["date"]) << std::endl;
-                                std::cout << Dependencies::getNameById(messages[i]["userId"]) << std::endl;
+                                std::cout << Dependencies::getUserNameById(messages[i]["userId"]) << std::endl;
                                 std::cout << Networking::decode(messages[i]["text"]) << std::endl;
                                 std::cout << std::endl;
                             }
@@ -245,7 +245,7 @@ int main(int argv, char **args) {
         Networking::getInstance(true).add_request(
                 Listener(
                         [](nlohmann::json result) -> void {
-                            Dependencies::saveRooms(result["rooms"]);
+                            Dependencies::saveUsers(result["users"]);
                         },
                         [](std::exception e) -> void {
                             exit(1);

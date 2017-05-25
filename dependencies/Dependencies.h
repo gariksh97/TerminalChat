@@ -22,7 +22,7 @@ public:
 
     static void saveUsers(nlohmann::json result);
     static void saveRooms(nlohmann::json result);
-    static std::string getNameById(int id);
+    static std::string getUserNameById(int id);
     static std::string getRoomNameById(int id);
 
     static void notify(std::string name, std::string text);
