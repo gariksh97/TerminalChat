@@ -36,8 +36,17 @@ public:
     static constexpr int TUI_LEFT         = KEY_LEFT;
     static constexpr int TUI_RIGHT        = KEY_RIGHT;
     static constexpr int TUI_ENTER        = KEY_ENTER;
-    static constexpr int TUI_BACKSPACE    = KEY_BACKSPACE;
     static constexpr int TUI_DC           = KEY_DC;
+#endif
+
+#if linux 
+    static constexpr int TUI_BACKSPACE    = KEY_BACKSPACE;
+#endif
+#if __APPLE__
+    static constexpr int TUI_BACKSPACE    = 127;
+#endif
+
+#if linux || __APPLE__
 
 };
 
