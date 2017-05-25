@@ -12,7 +12,6 @@ void DependenciesTUI::tui_initscr() {
 #endif
 #if __APPLE__
 void DependenciesTUI::tui_initscr() {
-    setlocale(LC_ALL, "");
     initscr();
 }
 #endif
