@@ -2,6 +2,7 @@
 #include "network/Networking.h"
 #include "dependencies/Dependencies.h"
 #include "tui/ChatTUI.h"
+#include <unistd.h>
 #include "network/Errors.h"
 
 void reg(int argv, char **args) {
@@ -92,7 +93,7 @@ void create(int argv, char **args) {
                     [name](nlohmann::json result) -> void {
                         int result_code = result["code"];
                         if (result_code == Errors::OK) {
-                            std::cout << "Room \"" + name + "\" is created";
+                            std::cout << "Room \"" + name + "\" is created" << std::endl;
                         } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;
                         } else if (result_code == Errors::ROOM_ALREADY_EXISTS) {
@@ -162,10 +163,9 @@ void get(int argv, char **args) {
                         if (result_code == Errors::OK) {
                             nlohmann::json messages = result["messages:"];
                             for (int i = 0; i < messages.size(); i++) {
-                                std::cout << Networking::decode(messages[i]["date"]) << std::endl;
-                                std::cout << Dependencies::getUserNameById(messages[i]["userId"]) << std::endl;
+                                std::cout << Dependencies::getUserNameById(messages[i]["userId"]) << " (";
+                                std::cout << Networking::decode(messages[i]["date"]) << "):" << std::endl;
                                 std::cout << Networking::decode(messages[i]["text"]) << std::endl;
-                                std::cout << std::endl;
                             }
                         } else if (result_code == Errors::WRONG_TOKEN) {
                             std::cout << "Please register or login again" << std::endl;

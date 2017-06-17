@@ -15,7 +15,7 @@ const std::string Networking::FULL_HOST = "http://" + HOST;
 const uint16_t Networking::PORT = 8080;
 
 
-Networking::Networking(bool async) : threadExecutor(1) {
+Networking::Networking(bool async) : executor(20, 2) {
     this->async = async;
 }
 
@@ -23,27 +23,20 @@ Networking::~Networking() {
 }
 
 void Networking::add_request(Listener listener, std::string url) {
-
-    std::function<void()> function = [this, listener, url]() -> void {
-        add_request_impl(
-                listener, url
-        );
-    };
     if (async) {
-        threadExecutor.enqueueWork(function);
+        add_request_async(listener, url);
     } else {
-        add_request_impl(listener, url);
+        add_request_sync(listener, url);
     }
 }
 
-void Networking::add_request_impl(Listener listener, std::string url) {
+void Networking::add_request_sync(Listener listener, std::string url) {
     std::stringstream request;
     request << "GET " << FULL_HOST << "/" << url << " HTTP/1.0\r\n";
     request << "HOST: " << HOST << "\r\n";
     request << "Accept: */*\r\n";
     request << "Connection: close\r\n\r\n";
-    char message[1000] = {};
-    request.read(message, 1000);
+
 #ifdef DEBUG
     std::cout << message << std::endl;
 #endif
@@ -67,17 +60,19 @@ void Networking::add_request_impl(Listener listener, std::string url) {
         std::cerr << "connect error" << std::endl;
         exit(2);
     }
-    send(sock, message, sizeof(message), 0);
 
+    char message[1000] = {};
+    request.read(message, 1000);
+    send(sock, message, sizeof(message), 0);
     std::string result;
 
     char buf[1];
     do {
-        buf[0] = NULL;
+        buf[0] = 0;
         recv(sock, buf, sizeof(buf), 0);
-        if (buf[0] != NULL)
+        if (buf[0] != 0)
             result += buf[0];
-    } while (buf[0] != NULL);
+    } while (buf[0] != 0);
 
     std::stringstream ss(result.c_str());
     std::string to;
@@ -91,8 +86,40 @@ void Networking::add_request_impl(Listener listener, std::string url) {
     }
 
     nlohmann::json json_result = nlohmann::json::parse(result);
-
     listener.onSuccess(json_result);
+}
+
+
+void Networking::add_request_async(Listener listener, std::string url) {
+    std::stringstream request;
+    request << "GET " << FULL_HOST << "/" << url << " HTTP/1.0\r\n";
+    request << "HOST: " << HOST << "\r\n";
+    request << "Accept: */*\r\n";
+    request << "Connection: keep-alive\r\n\r\n";
+
+#ifdef DEBUG
+    std::cout << message << std::endl;
+#endif
+    std::shared_ptr<ConnectExecutor::Item> item(new ConnectExecutor::Item());
+    item.get()->raw_host = gethostbyname(HOST.c_str());
+    if (item.get()->raw_host == NULL) {
+        std::cout << "ERROR, no such host";
+        exit(0);
+    }
+    item.get()->sock = socket(AF_INET, SOCK_STREAM, 0);
+    item.get()->addr.sin_family = AF_INET;
+    item.get()->addr.sin_port = htons(PORT);
+    bcopy(
+            item.get()->raw_host->h_addr,
+            &item.get()->addr.sin_addr,
+            item.get()->raw_host->h_length
+    );
+    if (connect(item.get()->sock, (struct sockaddr *) &item.get()->addr, sizeof(item.get()->addr)) < 0) {
+        std::cerr << "connect error" << std::endl;
+        exit(2);
+    }
+    request.read(item.get()->message, 1000);
+    executor.add_socket(item, listener);
 }
 
 std::string Networking::encode(std::string s) {

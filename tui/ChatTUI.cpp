@@ -36,7 +36,7 @@ void ChatTUI::setTimerSize(int timerSize) {
 void ChatTUI::start() {
 
 
-    Networking::getInstance(false).add_request(
+    Networking::getInstance(true).add_request(
             Listener(
                     [this](nlohmann::json result) -> void {
                         std::vector<ChatModel> chats;
@@ -53,10 +53,6 @@ void ChatTUI::start() {
             "api/roomsForUser/:token=" + Networking::encode(Dependencies::loadToken())
     );
 
-
-    //std::vector<ChatModel> chats;
-    //chats.push_back(ChatModel("testerRoom"));
-    //this->chatList.setChats(chats);
     DependenciesTUI::tui_initscr();
     DependenciesTUI::tui_keypad();
     DependenciesTUI::tui_raw();
@@ -172,6 +168,7 @@ void ChatTUI::start() {
         }
     };
     exit();
+
 }
 
 void ChatTUI::exit() {

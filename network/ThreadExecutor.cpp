@@ -5,6 +5,7 @@
 #include "ThreadExecutor.h"
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 ThreadExecutor::ThreadExecutor(unsigned int count) {
     executors.resize(count);
@@ -45,7 +46,7 @@ void ThreadExecutor::executor() {
     isQuited++;
 }
 
-void ThreadExecutor::enqueueWork(std::function<void()> item) {
+void ThreadExecutor::enqueue_work(std::function<void()> item) {
     {
         std::lock_guard<std::mutex> l(mutex);
         taskQueue.push(item);

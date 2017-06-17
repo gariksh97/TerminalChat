@@ -19,7 +19,7 @@ public:
 
     ~ThreadExecutor();
 
-    void enqueueWork(std::function<void()> item);
+    void enqueue_work(std::function<void()> item);
 
 private:
     void executor();

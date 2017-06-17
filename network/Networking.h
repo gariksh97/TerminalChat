@@ -8,6 +8,7 @@
 
 #include "Listener.h"
 #include "ThreadExecutor.h"
+#include "../dependencies/ConnectExecutor.h"
 #include <string>
 #include <thread>
 #include <condition_variable>
@@ -23,7 +24,6 @@ public:
 
 
     void add_request(Listener listener, std::string url);
-    void add_request_impl(Listener listener, std::string url);
 
     ~Networking();
 
@@ -31,7 +31,10 @@ private:
     Networking(bool async);
 
     bool async;
-    ThreadExecutor threadExecutor;
+    ConnectExecutor executor;
+
+    void add_request_sync(Listener listener, std::string url);
+    void add_request_async(Listener listener, std::string url);
 
     static const std::string HOST;
     static const std::string FULL_HOST;

@@ -24,9 +24,9 @@ public:
 
     ~Listener();
 
-    void onSuccess(nlohmann::json result);
+    void onSuccess(nlohmann::json result) const;
 
-    void onError(std::exception e);
+    void onError(std::exception e) const;
 
 private:
     onSuccessType onSuccessFunction;

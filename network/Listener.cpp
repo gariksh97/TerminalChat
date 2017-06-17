@@ -25,11 +25,11 @@ Listener::~Listener() {
 
 }
 
-void Listener::onSuccess(nlohmann::json result) {
+void Listener::onSuccess(nlohmann::json result) const {
     onSuccessFunction(result);
 }
 
-void Listener::onError(std::exception e) {
+void Listener::onError(std::exception e) const {
     onErrorFunction(e);
 }
 

@@ -36,7 +36,7 @@ if (UNIX AND NOT APPLE)
             models/MessageModel.h
 
             json/json.hpp
-            )
+            dependencies/ConnectExecutor.cpp dependencies/ConnectExecutor.h)
 
     target_link_libraries(TerminalChatLinux
             -lpthread -lcurl -lncursesw -lncurses
