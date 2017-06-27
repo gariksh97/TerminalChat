@@ -15,6 +15,7 @@ MessageModel::~MessageModel() {}
 MessageModel& MessageModel::operator=(MessageModel const &other) {
     this->from = other.from;
     this->message = other.message;
+    this->time = other.time;
     return *this;
 }
 
