@@ -114,33 +114,35 @@ void ConnectExecutor::add_socket_impl() {
             std::shared_ptr<Item> item = request.first;
             requestQueue.pop();
             mutex.unlock();
-            send(item.get()->sock, item.get()->message, sizeof(item.get()->message), 0);
-            std::string result;
-
-            char buf[1];
-            do {
-                buf[0] = 0;
-                recv(item.get()->sock, buf, sizeof(buf), 0);
-                if (buf[0] != 0)
-                    result += buf[0];
-            } while (buf[0] != 0);
-
-            std::stringstream ss(result.c_str());
-            std::string to;
-
-            for (int i = 0; i < 5; i++)
-                std::getline(ss, to, '\n');
-
-            result = "";
-            while (std::getline(ss, to, '\n')) {
-                result += to + "\n";
-            }
-
-            nlohmann::json json_result = nlohmann::json::parse(result);
             Listener listener = request.second;
-            responseExecutor.enqueue_work([this, listener, json_result]() -> void {
-                Listener l = listener;
-                l.onSuccess(json_result);
+            responseExecutor.enqueue_work([this, item, listener]() -> void {
+                send(item.get()->sock, item.get()->message, sizeof(item.get()->message), 0);
+                std::string result;
+
+                char buf[1];
+                do {
+                    buf[0] = 0;
+                    recv(item.get()->sock, buf, sizeof(buf), 0);
+                    if (buf[0] != 0)
+                        result += buf[0];
+                } while (buf[0] != 0);
+
+                std::stringstream ss(result.c_str());
+                std::string to;
+
+                for (int i = 0; i < 5; i++)
+                    std::getline(ss, to, '\n');
+
+                result = "";
+                while (std::getline(ss, to, '\n')) {
+                    result += to + "\n";
+                }
+
+                nlohmann::json json_result = nlohmann::json::parse(result);
+                responseExecutor.enqueue_work([this, listener, json_result]() -> void {
+                    Listener l = listener;
+                    l.onSuccess(json_result);
+                });
             });
             mutex.lock();
         }
